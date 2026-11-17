@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TextbookSwap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
+<style>
+:root{--blue:#000E54;--orange:#F76900;--dork:#D74100;--ink2:#3B4166;--panel:#F2F3F8;--line:#C9CCDA}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#E4E6EF;font-family:Inter,Verdana,sans-serif;color:var(--blue)}
+button,input{font-family:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--dork);outline-offset:2px}
+.app{width:100%;max-width:430px;height:100dvh;margin:0 auto;background:#fff;display:flex;flex-direction:column;overflow:hidden}
+@media (min-width:600px){.app{height:min(844px,calc(100dvh - 48px));margin:24px auto;border:10px solid var(--blue)}}
+header{background:var(--blue);color:#fff;padding:max(24px,env(safe-area-inset-top)) 20px 16px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:32px;height:32px;background:var(--orange);color:var(--blue);display:flex;align-items:center;justify-content:center;font:600 20px Oswald,Impact,sans-serif}
+.name{font:600 24px Oswald,Impact,sans-serif;letter-spacing:.5px;text-transform:uppercase}
+#note{font-size:13px}
+main{flex:1;overflow-y:auto;min-height:0}
+.pad{padding:20px 20px 24px;display:flex;flex-direction:column;gap:16px}
+h1{margin:0;font:600 32px/1.05 Oswald,Impact,sans-serif;text-transform:uppercase}
+.sub{margin:8px 0 0;font-size:15px;line-height:1.5;color:var(--ink2)}
+label,.lab{font-size:13px;font-weight:600}
+.field{display:flex;flex-direction:column;gap:6px}
+input[type=text]{min-height:44px;width:100%;padding:0 12px;border:1px solid #6B7090;font-size:16px;color:var(--blue);background:#fff;border-radius:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;padding:0 16px;font-size:14px;font-weight:600;border:1px solid var(--blue);background:#fff;color:var(--blue);border-radius:0}
+.chip[aria-pressed=true]{background:var(--blue);color:#fff}
+.card{background:var(--panel);padding:16px;display:flex;flex-direction:column;gap:10px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.course{font-size:12px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.6px}
+.title{font-size:17px;font-weight:700;margin-top:2px;line-height:1.25}
+.ed{font-size:13px;color:var(--ink2);margin-top:2px}
+.price{font:600 28px/1 Oswald,Impact,sans-serif}
+.tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag{border:1px solid var(--blue);padding:3px 8px;font-size:12px;font-weight:500}
+.save{background:var(--orange);color:var(--blue);padding:3px 8px;font-size:12px;font-weight:700}
+.seller{font-size:13px;color:var(--ink2)}
+.acts{display:flex;gap:8px}
+.msg{flex:1;min-height:44px;padding:0 16px;font-size:14px;font-weight:700;border:2px solid var(--blue);background:var(--blue);color:#fff;border-radius:0}
+.msg[aria-pressed=true]{background:#fff;color:var(--blue)}
+.heart{width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;border:2px solid var(--blue);background:#fff;color:var(--blue);border-radius:0}
+.heart[aria-pressed=true]{background:var(--orange)}
+.heart[aria-pressed=true] svg{fill:currentColor}
+.empty{background:var(--panel);padding:16px;font-size:15px;line-height:1.5}
+.ok{background:var(--orange);color:var(--blue);padding:14px 16px;font-size:15px;font-weight:600;line-height:1.4}
+.post{min-height:48px;border:2px solid var(--blue);font-size:16px;font-weight:700;background:var(--blue);color:#fff;border-radius:0}
+.post:disabled{border-color:#6B7090;background:#E4E6EF;color:var(--ink2);cursor:not-allowed}
+.hint{font-size:13px;color:var(--ink2);line-height:1.5}
+.saved{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--panel);padding:16px}
+nav{display:flex;border-top:1px solid var(--line);background:#fff;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:60px;border:0;border-top:4px solid transparent;background:#fff;color:var(--ink2);font-size:12px;font-weight:500}
+nav button[aria-current=page]{color:var(--blue);font-weight:700;border-top-color:var(--orange)}
+@media (prefers-reduced-motion:no-preference){.ok{animation:pop .25s ease-out}@keyframes pop{from{transform:translateY(-6px);opacity:0}to{transform:none;opacity:1}}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><div class="logo">T</div><div class="name">TextbookSwap</div></div>
+    <div id="note">Syracuse, NY</div>
+  </header>
+  <main id="main"></main>
+  <nav aria-label="Main">
+    <button data-tab="browse"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Browse</span></button>
+    <button data-tab="sell"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Sell</span></button>
+    <button data-tab="saved"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/></svg><span>Saved</span></button>
+  </nav>
+</div>
+
+<script>
+(function () {
+  var COURSES = ['All', 'IST 344', 'MAT 295', 'WRT 205'];
+  var SELL_COURSES = ['IST 344', 'MAT 295', 'WRT 205'];
+  var CONDS = ['Like new', 'Good', 'Worn'];
+  var BASE = [
+    { id: 'b1', course: 'IST 344', title: 'Persuasive Speaking in Practice', edition: '5th edition', priceN: 32, newN: 85, cond: 'Good', meet: 'Bird Library', seller: 'Maya, Class of 2027' },
+    { id: 'b2', course: 'MAT 295', title: 'Calculus: Early Transcendentals', edition: '9th edition', priceN: 55, newN: 180, cond: 'Like new', meet: 'Schine Student Center', seller: 'Jordan, Class of 2028' },
+    { id: 'b3', course: 'WRT 205', title: 'A Guide to Research Writing', edition: '3rd edition', priceN: 18, newN: 60, cond: 'Worn', meet: 'Carnegie Library', seller: 'Sam, Class of 2027' },
+    { id: 'b4', course: 'IST 344', title: 'Presenting With Data', edition: '2nd edition', priceN: 24, newN: 70, cond: 'Good', meet: 'Hall of Languages', seller: 'Priya, Class of 2026' }
+  ];
+  var HEART = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/></svg>';
+
+  var s = { tab: 'browse', course: 'All', query: '', saved: {}, messaged: {}, mine: [], sTitle: '', sPrice: '', sCond: 'Good', sCourse: 'IST 344', justListed: false };
+  var main = document.getElementById('main');
+  var note = document.getElementById('note');
+
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function all() { return s.mine.concat(BASE); }
+  function chipRow(list, current, attr) {
+    return list.map(function (c) { return '<button class="chip" ' + attr + '="' + esc(c) + '" aria-pressed="' + (c === current) + '">' + esc(c) + '</button>'; }).join('');
+  }
+  function updateNote() {
+    var n = Object.keys(s.saved).filter(function (k) { return s.saved[k]; }).length;
+    note.textContent = n > 0 ? n + ' saved' : 'Syracuse, NY';
+  }
+  function setNav() {
+    document.querySelectorAll('nav button').forEach(function (b) {
+      if (b.dataset.tab === s.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+  }
+
+  /* ---------- Browse ---------- */
+  function browseShell() {
+    main.innerHTML =
+      '<div class="pad">' +
+      '<div><h1>Buy used. Keep more.</h1><p class="sub">Textbooks from students who just finished your course.</p></div>' +
+      '<div class="field"><label for="q">Search by title or course</label>' +
+      '<input id="q" type="text" placeholder="Try a title or IST 344" autocomplete="off" value="' + esc(s.query) + '"></div>' +
+      '<div class="chips" id="courseChips"></div>' +
+      '<div id="list" class="pad" style="padding:0"></div></div>';
+    document.getElementById('q').addEventListener('input', function (e) { s.query = e.target.value; browseList(); });
+    browseList();
+  }
+  function browseList() {
+    document.getElementById('courseChips').innerHTML = chipRow(COURSES, s.course, 'data-course');
+    var q = s.query.trim().toLowerCase();
+    var books = all().filter(function (b) {
+      return (s.course === 'All' || b.course === s.course) && (q === '' || (b.title + ' ' + b.course).toLowerCase().indexOf(q) !== -1);
+    });
+    var html = books.length === 0 ? '<div class="empty">No books match that search. Try another title or course.</div>' : books.map(function (b) {
+      var diff = b.newN ? b.newN - b.priceN : 0, sv = !!s.saved[b.id], ms = !!s.messaged[b.id];
+      return '<div class="card">' +
+        '<div class="top"><div><div class="course">' + esc(b.course) + '</div><div class="title">' + esc(b.title) + '</div><div class="ed">' + esc(b.edition) + '</div></div><div class="price">$' + b.priceN + '</div></div>' +
+        '<div class="tags"><span class="tag">' + esc(b.cond) + '</span><span class="tag">' + esc(b.meet) + '</span>' + (diff > 0 ? '<span class="save">Save $' + diff + ' vs new</span>' : '') + '</div>' +
+        '<div class="seller">Sold by ' + esc(b.seller) + '</div>' +
+        '<div class="acts"><button class="msg" data-msg="' + b.id + '" aria-pressed="' + ms + '">' + (ms ? 'Message sent' : 'Message seller') + '</button>' +
+        '<button class="heart" data-save="' + b.id + '" aria-pressed="' + sv + '" aria-label="' + (sv ? 'Remove from saved' : 'Save this book') + '">' + HEART + '</button></div></div>';
+    }).join('');
+    document.getElementById('list').innerHTML = html;
+  }
+
+  /* ---------- Sell ---------- */
+  function sellState() {
+    var price = parseInt(s.sPrice, 10);
+    return sTitleOk() && !isNaN(price) && price > 0;
+  }
+  function sTitleOk() { return s.sTitle.trim().length > 0; }
+  function sellShell() {
+    main.innerHTML =
+      '<div class="pad">' +
+      '<div><h1>Sell your books</h1><p class="sub">Post in under a minute. Meet a buyer on campus.</p></div>' +
+      '<div id="banner"></div>' +
+      '<div class="field"><label for="t">Book title</label><input id="t" type="text" placeholder="Title of your textbook" autocomplete="off" value="' + esc(s.sTitle) + '"></div>' +
+      '<div class="field"><label for="p">Your price in dollars</label><input id="p" type="text" inputmode="numeric" placeholder="For example 40" autocomplete="off" value="' + esc(s.sPrice) + '"></div>' +
+      '<div><div class="lab" style="margin-bottom:6px">Condition</div><div class="chips" id="condChips"></div></div>' +
+      '<div><div class="lab" style="margin-bottom:6px">Course</div><div class="chips" id="sellChips"></div></div>' +
+      '<button class="post" id="post">List my book</button><div class="hint" id="hint"></div></div>';
+    document.getElementById('t').addEventListener('input', function (e) { s.sTitle = e.target.value; s.justListed = false; sellUpdate(); });
+    document.getElementById('p').addEventListener('input', function (e) { var v = e.target.value.replace(/[^0-9]/g, ''); e.target.value = v; s.sPrice = v; s.justListed = false; sellUpdate(); });
+    sellUpdate();
+  }
+  function sellUpdate() {
+    document.getElementById('condChips').innerHTML = chipRow(CONDS, s.sCond, 'data-cond');
+    document.getElementById('sellChips').innerHTML = chipRow(SELL_COURSES, s.sCourse, 'data-sellcourse');
+    var ready = sellState();
+    document.getElementById('post').disabled = !ready;
+    document.getElementById('hint').textContent = ready ? 'Ready to post. Buyers will message you in the app.' : 'Add a title and a price to list your book.';
+    document.getElementById('banner').innerHTML = s.justListed ? '<div class="ok" role="status">Listed. Your book now shows at the top of Browse.</div>' : '';
+  }
+
+  /* ---------- Saved ---------- */
+  function savedView() {
+    var books = all().filter(function (b) { return s.saved[b.id]; });
+    main.innerHTML = '<div class="pad"><h1>Saved books</h1>' + (books.length === 0 ?
+      '<div class="empty">Nothing saved yet. Tap the heart on a book in Browse to keep it here.</div>' :
+      books.map(function (b) {
+        return '<div class="saved"><div><div class="course">' + esc(b.course) + '</div><div class="title">' + esc(b.title) + '</div><div class="ed">' + esc(b.cond) + ' &middot; ' + esc(b.meet) + '</div></div><div class="price">$' + b.priceN + '</div></div>';
+      }).join('')) + '</div>';
+  }
+
+  function show(tab) {
+    s.tab = tab; setNav(); main.scrollTop = 0;
+    if (tab === 'browse') browseShell(); else if (tab === 'sell') { s.justListed = false; sellShell(); } else savedView();
+  }
+
+  /* ---------- Events ---------- */
+  document.querySelector('nav').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (b) show(b.dataset.tab);
+  });
+  main.addEventListener('click', function (e) {
+    var el = e.target.closest('button'); if (!el) return;
+    if (el.dataset.course) { s.course = el.dataset.course; browseList(); }
+    else if (el.dataset.save) { s.saved[el.dataset.save] = !s.saved[el.dataset.save]; browseList(); updateNote(); }
+    else if (el.dataset.msg) { s.messaged[el.dataset.msg] = !s.messaged[el.dataset.msg]; browseList(); }
+    else if (el.dataset.cond) { s.sCond = el.dataset.cond; sellUpdate(); }
+    else if (el.dataset.sellcourse) { s.sCourse = el.dataset.sellcourse; sellUpdate(); }
+    else if (el.id === 'post') {
+      if (!sellState()) return;
+      s.mine.unshift({ id: 'm' + Date.now(), course: s.sCourse, title: s.sTitle.trim(), edition: 'Your listing', priceN: parseInt(s.sPrice, 10), newN: 0, cond: s.sCond, meet: 'You choose', seller: 'You' });
+      s.sTitle = ''; s.sPrice = ''; s.justListed = true;
+      document.getElementById('t').value = ''; document.getElementById('p').value = '';
+      sellUpdate();
+    }
+  });
+
+  show('browse');
+})();
+</script>
+</body>
+</html>
